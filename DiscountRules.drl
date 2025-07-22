@@ -1,0 +1,28 @@
+
+package com.example.rules
+
+import com.example.app.ProcessedMessage;
+
+rule "Apply Discount for High Value Customers"
+    when
+        $message : ProcessedMessage(payload contains "premium_customer", Double.parseDouble(payload.replaceAll("[^0-9\\.]", "")) > 1000)
+    then
+        modify($message) {
+            setDiscount(0.10),
+            setStatus("discounted")
+        }
+        System.out.println("Applied 10% discount for premium customer: " + $message.getId());
+end
+
+rule "Flag Suspicious Transaction"
+    when
+        $message : ProcessedMessage(payload contains "suspicious_transaction", Double.parseDouble(payload.replaceAll("[^0-9\\.]", "")) > 5000)
+    then
+        modify($message) {
+            setSuspicious(true),
+            setStatus("flagged")
+        }
+        System.out.println("Flagged suspicious transaction: " + $message.getId());
+end
+
+
